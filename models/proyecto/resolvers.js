@@ -19,16 +19,27 @@ const resolversProyecto = {
   },
   Query: {
     Proyectos: async (parent, args, context) => {
-      const proyectos = await ProjectModel.find();
+      const proyectos = await ProjectModel.find().populate([
+        {
+          path:"avances",
+          populate:[{path:"creadoPor"}]
+        }
+      ]);
       return proyectos;
     },
+    Proyecto: async(parent, args) => {
+      return await ProjectModel.findById(args._id).populate([
+        {
+          path:"avances",
+          populate:[{path:"creadoPor"}]
+        }
+      ]);
+    }
   },
   Mutation: {
     crearProyecto: async (parent, args, context) => {
       const proyectoCreado = await ProjectModel.create({
         nombre: args.nombre,
-        fechaInicio: args.fechaInicio,
-        fechaFin: args.fechaFin,
         presupuesto: args.presupuesto,
         lider: args.lider,
         objetivos: args.objetivos,
@@ -84,6 +95,13 @@ const resolversProyecto = {
       );
       return proyectoObjetivo;
     },
+    terminarProyecto: async(parent,args) => {
+      return await ProjectModel.findByIdAndUpdate(args._id,{
+        fase:"TERMINADO",
+        estado:"INACTIVO",
+        fechaFin:Date.now()
+      },{new: true});
+    }
   },
 };
 

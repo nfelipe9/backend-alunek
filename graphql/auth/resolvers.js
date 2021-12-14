@@ -30,6 +30,14 @@ const resolversAutenticacion = {
 
     login: async (parent, args) => {
       const usuarioEcontrado = await UserModel.findOne({ correo: args.correo });
+
+      if(!usuarioEcontrado) {
+        return{
+          error:"Correo o contraseña incorrectos"
+        }
+      }
+
+
       if (await bcrypt.compare(args.password, usuarioEcontrado.password)) {
         return {
           token: generateToken({
@@ -41,6 +49,10 @@ const resolversAutenticacion = {
             rol: usuarioEcontrado.rol,
           }),
         };
+      }
+
+      return {
+        error:"Correo o contraseña incorrectos"
       }
     },
 

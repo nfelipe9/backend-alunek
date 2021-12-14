@@ -28,6 +28,9 @@ const resolverInscripciones = {
       const inscripciones = await InscriptionModel.find({ ...filtro });
       return inscripciones;
     },
+    inscripcionesEstudiante: async (parent, args) => {
+      return await InscriptionModel.find({estudiante:args._id});
+    }
 
     // inscripcionesNoAprobadas: async () => {
     //   const ina = await InscriptionModel.find({ estado: 'PENDIENTE' }).populate('estudiante');
@@ -52,6 +55,15 @@ const resolverInscripciones = {
       );
       return inscripcionAprobada;
     },
+    rechazarInscripcion: async(parent, args) => {
+      return await InscriptionModel.findByIdAndUpdate(
+        args.id,
+        {
+          estado:"RECHAZADO"
+        },
+        { new: true}
+      )
+    }
   },
 };
 
